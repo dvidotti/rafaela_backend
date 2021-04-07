@@ -1,21 +1,27 @@
 const express = require('express')
 const router = express.Router()
 const isLoggedIn = require('../middleware/authMiddleware')
-const apodController = require("../controllers/apodController")
+const mediaControler = require("../controllers/mediaControler")
+const projectControler = require("../controllers/projectControler")
+const portfolioControler = require("../controllers/portfolioControler")
 
 
-// APOD ROUTES //
+// MEDIA ROUTES
+router.post('/media', isLoggedIn, mediaControler.createMedia)
+router.get('/media/:mediaId', mediaControler.getMedia)
+router.delete('/media/:mediaId', isLoggedIn, mediaControler.deleteMedia)
+router.put('/media', isLoggedIn, mediaControler.updateMedia)
 
-router.get('/', (req, res, next) => {
-  res.status(404).json({"error": "CHEGOU"})
-})
 
-router.post('/apod', apodController.createApod )
+// PROJECT ROUTES
+router.post('/project', isLoggedIn,  projectControler.createProject)
+router.put('/project/', isLoggedIn, projectControler.updateProject)
+router.delete('/project/:projectId', isLoggedIn, projectControler.deleteProject)
+router.get('/project/:projectId', projectControler.getProject)
 
-router.get('/apod/:apodDate', apodController.getApod)
+// PORTFOLIO ROUTES
+router.get('/portfolio', isLoggedIn,  portfolioControler.getPortfolio)
+router.put('/portfolio', isLoggedIn,  portfolioControler.updatePortfolio)
 
-router.get('/favorites', isLoggedIn, apodController.getFavorites)
-
-router.put('/favorite/:apodDate/:flag', isLoggedIn, apodController.updatedFavorites)
 
 module.exports = router

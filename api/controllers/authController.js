@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv');
 dotenv.config();
 const secret = process.env.SECRET
+const bckSecretValue = process.env.bckSecret
 
 
 //errorHandler
@@ -38,7 +39,12 @@ const createJWT = (id) => {
 
 // SignIn
 module.exports.createUser =  async (req, res, next) => {
-  let {email, password} = req.body;
+  let bckSecret = bckSecretValue;
+  let {email, password, secret} = req.body;
+  if(secret !== bckSecret) {
+    res.status(403).json({"success": false, "error": "Wrong secret"})
+    return;
+  }
   try {
     let user = await User.create({email, password});
     const token = createJWT(user._id)
