@@ -10,14 +10,11 @@ const Project = mongoose.model("Project", new Schema({
     type: {type: String},
     areas: [{type: String}],
     cover: {type: Schema.Types.ObjectId, ref: 'Media'},
-    headImg: {type: Schema.Types.ObjectId, ref: 'Media'},
     link: {type: String},
-    description: {type: String},
-    local: {type: String},
-    date: {type: String},
-    link: {type: String},
-    partnership: {type: String},
-    images: [{type: Schema.Types.ObjectId, ref: 'Media'}]
+    modules: {
+      type: Schema.Types.ObjectId,
+      ref: 'ModulesCollection'
+    },
   },
   {
     timestamp: true

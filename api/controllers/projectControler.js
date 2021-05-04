@@ -1,5 +1,8 @@
 const Project = require('../../models/Project')
 const Portfolio = require('../../models/Portfolio')
+const ModulesCollection = require('../../models/ModulesCollection')
+const FullImageModule = require('../../models/FullImageModule')
+const Module = require('../../models/Module')
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -23,13 +26,7 @@ module.exports.createProject = async (req, res, next) => {
     type,
     areas,
     cover,
-    headImg,
     link,
-    description,
-    local,
-    date,
-    partnership,
-    images,
   } = req.body
 
   let projectObj = {
@@ -37,18 +34,13 @@ module.exports.createProject = async (req, res, next) => {
     type,
     areas,
     cover,
-    headImg,
     link,
-    description,
-    local,
-    date,
-    partnership,
-    images, 
   }
   try {
-    let project = await Project.create(projectObj)
-    if (project) {
-      let portfolio = await Portfolio.find()
+    const module = await ModulesCollection.create({})
+    projectObj.modules = module._id
+    const project = await Project.create(projectObj)
+    const portfolio = await Portfolio.find()
       if(portfolio.length === 0) {
         console.log("PROJECT", project)
         portfolio = await Portfolio.create({portfolio: [project._id]})
@@ -61,7 +53,6 @@ module.exports.createProject = async (req, res, next) => {
           )
           console.log(portFolioUpadted)
       }
-    } 
     res.status(201).json(project)
   } 
   catch (err) {
@@ -109,19 +100,17 @@ module.exports.deleteProject = async (req, res, next) => {
 
 module.exports.updateProject = async (req, res, next) => {
   let {
-    projectId, name, type, areas, cover, headImg, link,
-    description, local, date, partnership, images,
+    projectId, name, type, areas, cover, link,
   } = req.body
 
   let projectObj = {
-    name, type, areas, cover, headImg, link,
-    description, local, date, partnership, images,
+    name, type, areas, cover, headImg, link
   }
 
   try {
     const projectUpdated = await Project.findOneAndUpdate(
       {_id: projectId}, projectObj, {new:true}
-    ).populate('images cover headImg')
+    ).populate('cover headImg')
     if (projectUpdated === null) {
       throw Error("Couldn't find and update project");
     }
@@ -132,5 +121,45 @@ module.exports.updateProject = async (req, res, next) => {
   } catch(err){
     const error = handleErrors(err)
     res.status(401).json(error)
+  }
+}
+
+
+
+module.exports.createFullImage = async (req, res, next) => {
+  const {images, moduleId} = req.body;
+
+  try{
+    const fullImageModule = await FullImageModule.create({im})
+    const module = await Module.create({module: fullImageModule._id, onModel: "FullImageModule" })
+    const moduleCol = await ModulesCollection.findByIdAndUpdate(
+      moduleId, {$push: {modules: module._id}}, {new: true}
+    )
+    res.status(201).json({ success: true })
+  } catch(error) {
+    console.log(error)
+  }
+}
+
+module.exports.getModulesCollection = async (req, res, next) => {
+  const {id} = req.params;
+  try {
+    const mCol = await ModulesCollection.findById(id)
+    .populate({
+      path:'modules',
+      populate: {
+        path: "module",
+        populate: {
+          path: 'headImg',
+          path: 'images'
+        }
+      }
+    });
+    res.status(200).json({
+      success: true,
+      data: mCol
+    })
+  } catch(error) {
+    console.log(error)
   }
 }

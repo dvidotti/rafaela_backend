@@ -4,11 +4,13 @@ const isLoggedIn = require('../middleware/authMiddleware')
 const mediaControler = require("../controllers/mediaControler")
 const projectControler = require("../controllers/projectControler")
 const portfolioControler = require("../controllers/portfolioControler")
+const projHeaderControler = require("../controllers/projHeaderControler")
 
 
 // MEDIA ROUTES
 router.post('/media', isLoggedIn, mediaControler.createMedia)
 router.get('/media/:mediaId', mediaControler.getMedia)
+router.get('/medias/', mediaControler.getMedias)
 router.delete('/media/:mediaId', isLoggedIn, mediaControler.deleteMedia)
 router.put('/media', isLoggedIn, mediaControler.updateMedia)
 
@@ -23,5 +25,11 @@ router.get('/project/:projectId', projectControler.getProject)
 router.get('/portfolio', isLoggedIn,  portfolioControler.getPortfolio)
 router.put('/portfolio', isLoggedIn,  portfolioControler.updatePortfolio)
 
+// MODULE ROUTEs
+router.post('/project-header/', isLoggedIn, projHeaderControler.createProjectHeader)
+router.post('/full-image/', isLoggedIn, projectControler.createFullImage)
+
+// MODULES COLLECTIONS ROUTES
+router.get('/modules/:id', isLoggedIn, projectControler.getModulesCollection)
 
 module.exports = router

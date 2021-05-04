@@ -12,7 +12,10 @@ module.exports.getPortfolio = async (req, res,next) => {
       path: 'portfolio',
       populate: {path: 'images cover headImg'}
     })
-    res.status(201).json(portfolioPopulated)
+    res.status(201).json({
+      success: true,
+      data: portfolioPopulated
+    })
   } catch(err) {
       const errors = handleError(err)
       res.status(400).json({errors})

@@ -1,59 +1,55 @@
 const User = require('../../models/User')
 const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv');
-dotenv.config();
-const secret = process.env.SECRET
-const bckSecretValue = process.env.bckSecret
+
+const {BCKSECRET, SECRET} = process.env
 
 
 //errorHandler
 const handleError = (err) => {
-  let error = {email: '', password: ''}
+  let error = {}
 
   if (err.message === "incorrect email or password") {
      error = {message: err.message}
-     return error
   }
 
   if(err.message.includes('User validation failed')) {
     Object.values(err.errors).forEach(({properties}) => {
        error[properties.path] = properties.message
-      })
-    return error
+    })
   } 
-
+  
   if(err.code === 11000){
-    error["email"] = "This email is already in use, choose a new one or login";
-    return error
+    error["message"] = "This email is already in use, choose a new one";
   } else {
     error = {message: err.message}
-    return error
   }
+  error['success'] = false;
+  return error
 }
 
 // create token
 let maxAge = 3 * 24 * 60 * 60;
 const createJWT = (id) => {
-  return jwt.sign({ id }, secret, {expiresIn: maxAge})
+  return jwt.sign({ id }, SECRET, {expiresIn: maxAge})
 }
 
 // SignIn
 module.exports.createUser =  async (req, res, next) => {
-  let bckSecret = bckSecretValue;
   let {email, password, secret} = req.body;
-  if(secret !== bckSecret) {
-    res.status(403).json({"success": false, "error": "Wrong secret"})
+  if(secret !== BCKSECRET) {
+    res.status(403).json({success: false, message: "Wrong secret"})
     return;
   }
   try {
     let user = await User.create({email, password});
     const token = createJWT(user._id)
     res.cookie('jwt', token, {maxAge: maxAge * 1000}) //insert httpOnly and secure for https in production
-    res.status(201).json({"user": user._id})
+    
+    res.status(201).json({success: true, user: user._id})
   }
   catch (err) {
     const errors = handleError(err)
-    res.status(400).json({errors})
+    res.status(400).json(errors)
   }   
 }
 
@@ -65,7 +61,7 @@ module.exports.login = async (req, res, next) => {
     if(user) {
       const token = createJWT(user._id)
       res.cookie('jwt', token, {maxAge: maxAge * 1000}) //insert httpOnly and secure for https in production
-      res.status(201).json({"user": user._id})
+      res.status(201).json({success: true, user: user._id})
     }
   } catch(err) {
     const errors = handleError(err)

@@ -6,9 +6,9 @@ const mongoose     = require('mongoose');
 const logger       = require('morgan');
 const path         = require('path');
 const auth = require('./api/routes/auth')
+const routes = require('./api/routes/routes')
 const cookieParser = require('cookie-parser')
 const errorHandler = require('./api/middleware/errorHandler')
-const routes = require('./api/routes/routes')
 const cors = require('cors')
 
 mongoose
@@ -26,9 +26,10 @@ const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.
 const app = express();
 
 app.use(cors({  
-  credentials: true,
-  origin: ['http://localhost:3000']
+  origin: 'http://localhost:3000',
+  credentials: true
 }))
+
 
 // Middleware Setup
 app.use(logger('dev'));
