@@ -104,13 +104,13 @@ module.exports.updateProject = async (req, res, next) => {
   } = req.body
 
   let projectObj = {
-    name, type, areas, cover, headImg, link
+    name, type, areas, cover, link
   }
 
   try {
-    const projectUpdated = await Project.findOneAndUpdate(
-      {_id: projectId}, projectObj, {new:true}
-    ).populate('cover headImg')
+    const projectUpdated = await Project.findByIdAndUpdate(
+      projectId, projectObj, {new:true, useFindAndModify: false}
+    ).populate('cover')
     if (projectUpdated === null) {
       throw Error("Couldn't find and update project");
     }

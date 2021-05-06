@@ -10,7 +10,7 @@ module.exports.getPortfolio = async (req, res,next) => {
     const portfolioId = portfolio[0]._id
     const portfolioPopulated = await Portfolio.findById(portfolioId).populate({
       path: 'portfolio',
-      populate: {path: 'images cover headImg'}
+      populate: {path: 'images cover'}
     })
     res.status(201).json({
       success: true,
