@@ -63,6 +63,7 @@ module.exports.createProject = async (req, res, next) => {
 
 module.exports.getProject = async (req, res, next) => {
   let { projectId } = req.params;
+  console.log("PROJECTID", projectId)
   try {
     const project = await Project.findById(projectId).populate('images cover headImg')
     if(project === null) {
@@ -130,7 +131,7 @@ module.exports.createFullImage = async (req, res, next) => {
   const {images, moduleId} = req.body;
 
   try{
-    const fullImageModule = await FullImageModule.create({im})
+    const fullImageModule = await FullImageModule.create({images})
     const module = await Module.create({module: fullImageModule._id, onModel: "FullImageModule" })
     const moduleCol = await ModulesCollection.findByIdAndUpdate(
       moduleId, {$push: {modules: module._id}}, {new: true}
@@ -150,8 +151,7 @@ module.exports.getModulesCollection = async (req, res, next) => {
       populate: {
         path: "module",
         populate: {
-          path: 'headImg',
-          path: 'images'
+          path: 'headImg images',
         }
       }
     });

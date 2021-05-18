@@ -27,6 +27,7 @@ router.put('/portfolio', isLoggedIn,  portfolioControler.updatePortfolio)
 
 // MODULE ROUTEs
 router.post('/project-header/', isLoggedIn, projHeaderControler.createProjectHeader)
+router.put('/project-header/', isLoggedIn, projHeaderControler.updateProjectHeader)
 router.post('/full-image/', isLoggedIn, projectControler.createFullImage)
 
 // MODULES COLLECTIONS ROUTES

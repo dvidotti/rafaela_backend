@@ -13,7 +13,6 @@ const ProjectHeader = mongoose.model("ProjectHeader", new Schema({
     local: {type: String},
     date: {type: String},
     partnership: {type: String},
-    module_id: {}
   },
   {
     timestamp: true
