@@ -14,7 +14,7 @@ const handleErrors = (err) => {
   return errors
 }
 
-
+// CREATE
 module.exports.createProjectHeader = async (req, res, next) => {
   const {
     title, 
@@ -79,13 +79,12 @@ module.exports.updateProjectHeader = async (req, res, next) => {
     date,
     partnership
   }
-  console.log("AQUIOBJ", projectHeaderId,obj)
 
   try{
     const projectHeader = await ProjectHeader.findByIdAndUpdate(projectHeaderId, obj)
     res.status(200).json({
       success: true,
-      message: `Project with ID: ${projectHeaderId} was updated with success`,
+      message: `ProjectHeader with ID: ${projectHeaderId} was updated with success`,
       data: projectHeader
     })
   } catch(errors) {
@@ -95,3 +94,21 @@ module.exports.updateProjectHeader = async (req, res, next) => {
 }
 
 //DELETE
+module.exports.deleteProjectHeader = async (req, res, next) => {
+  const { moduleId, projectHeaderId, modulesCollId } = req.body;
+  try{
+    const projectHeader = await ProjectHeader.findByIdAndRemove(projectHeaderId);
+    const module = await Module.findByIdAndRemove(moduleId);
+    const moduleColl = await ModulesCollection.findByIdAndUpdate(
+      modulesCollId, {$pull: {modules: moduleId}}
+    )
+    res.status(200).json({
+      success: true,
+      message: `ProjectHeader with ID: ${projectHeaderId} was deleted with success`,
+      data: projectHeader
+    })
+  } catch(errors) {
+    console.log(errors)
+    handleErrors(errors)
+  }
+}

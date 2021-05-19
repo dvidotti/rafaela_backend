@@ -101,11 +101,20 @@ module.exports.deleteProject = async (req, res, next) => {
 
 module.exports.updateProject = async (req, res, next) => {
   let {
-    projectId, name, type, areas, cover, link,
+    projectId,
+    // name, 
+    // type, 
+    // areas, 
+    cover, 
+    // link,
   } = req.body
 
   let projectObj = {
-    name, type, areas, cover, link
+    // name,
+    // type, 
+    // areas, 
+    cover, 
+    // link
   }
 
   try {
