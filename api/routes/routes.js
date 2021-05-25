@@ -25,12 +25,14 @@ router.get('/project/:projectId', projectControler.getProject)
 router.get('/portfolio', isLoggedIn,  portfolioControler.getPortfolio)
 router.put('/portfolio', isLoggedIn,  portfolioControler.updatePortfolio)
 
-// MODULE ROUTEs
+// MODULE PROJECT HEADER ROUTES
 router.post('/project-header/', isLoggedIn, projHeaderControler.createProjectHeader)
 router.put('/project-header/', isLoggedIn, projHeaderControler.updateProjectHeader)
 router.delete('/project-header/', isLoggedIn, projHeaderControler.deleteProjectHeader)
 
+// MODULE FULL IMAGE ROUTES
 router.post('/full-image/', isLoggedIn, projectControler.createFullImage)
+router.put('/full-image/', isLoggedIn, projectControler.updateFullImage)
 
 // MODULES COLLECTIONS ROUTES
 router.get('/modules/:id', isLoggedIn, projectControler.getModulesCollection)

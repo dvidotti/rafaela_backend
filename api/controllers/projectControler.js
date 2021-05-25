@@ -145,7 +145,28 @@ module.exports.createFullImage = async (req, res, next) => {
     const moduleCol = await ModulesCollection.findByIdAndUpdate(
       moduleId, {$push: {modules: module._id}}, {new: true}
     )
-    res.status(201).json({ success: true })
+    res.status(201).json({ success: true, data: fullImageModule })
+  } catch(error) {
+    console.log(error)
+  }
+}
+
+module.exports.updateFullImage = async (req, res, next) => {
+  const {images, moduleId, fullImageModuleId} = req.body;
+  console.log("______________________________________")
+  console.log("IMAGES", images)
+  console.log("fullImageModuleId", fullImageModuleId)
+  console.log("______________________________________")
+  try{
+    const caralho = await FullImageModule.findById(fullImageModuleId)
+    console.log("CARALHOOOOOO", caralho)
+    const fullImageModule = await FullImageModule.findByIdAndUpdate(
+      fullImageModuleId, {images: images }, {useFindAndModify: false, new: true}
+    )
+    // const moduleCol = await ModulesCollection.findByIdAndUpdate(
+    //   moduleId, {$push: {modules: module._id}}, {new: true}
+    // )
+    res.status(201).json({ success: true, data: fullImageModule})
   } catch(error) {
     console.log(error)
   }

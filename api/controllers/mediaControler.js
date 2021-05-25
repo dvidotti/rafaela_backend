@@ -19,7 +19,6 @@ const handleErrors = (err) => {
 // CONTROLERS //
 
 module.exports.createMedia = async (req, res, next) => {
-  console.log("REQBODY", req.body)
   let {
     name, public_id, linkCloudinary, linkMyDomain, linkS3, media_type
   } = req.body
@@ -56,7 +55,6 @@ module.exports.getMedia = async (req, res, next) => {
 module.exports.getMedias = async (req, res, next) => {
   try {
     let medias = await Media.find()
-    console.log("MEDIAS", medias)
     if(medias === null) {
       throw Error("Couldn't get medias, not found")
     }
@@ -70,7 +68,6 @@ module.exports.getMedias = async (req, res, next) => {
 
 module.exports.deleteMedia = async (req, res, next) => {
   let { mediaId } = req.params;
-  console.log("MEDIAID", mediaId)
   try {
     let response = await Media.findByIdAndRemove(mediaId)
     if(response === null) {
@@ -87,7 +84,6 @@ module.exports.deleteMedia = async (req, res, next) => {
 
 module.exports.updateMedia = async (req, res, next) => {
   let { mediaId, name } = req.body;
-  console.log("media", mediaId, name)
   try {
     const media = await Media.findByIdAndUpdate(
       mediaId, {name, alt: name}, {new: true}
