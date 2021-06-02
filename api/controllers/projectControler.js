@@ -77,12 +77,15 @@ module.exports.getProject = async (req, res, next) => {
 }
 
 module.exports.deleteProject = async (req, res, next) => {
+  const {modCollId} = req.body;
+
   try {
     let { projectId } = req.params;
     let projectDeleted = await Project.findByIdAndDelete(projectId)
     if(projectDeleted === null) {
       throw Error("Couldn't find and delete project")
     }
+    let moduleCollection = await ModulesCollection.findByIdAndDelete(modCollId)
     let portfolio = await Portfolio.find();
     let portFolioId = portfolio[0]._id
     let portUpdated = await Portfolio.findByIdAndUpdate(
@@ -91,7 +94,12 @@ module.exports.deleteProject = async (req, res, next) => {
     console.log("PORT UPDATED", portUpdated)
     res.status(201).json({
       success: true,
-      message: `The project ${projectDeleted.name}  was succesfully deleted`
+      message: `The project ${projectDeleted.name}  was succesfully deleted`,
+      data: {
+        moduleCollection,
+        projectDeleted,
+        portUpdated
+      }
     })
   } catch(err) {
     const error = handleErrors(err)
@@ -99,7 +107,7 @@ module.exports.deleteProject = async (req, res, next) => {
   }
 }
 
-module.exports.updateProject = async (req, res, next) => {
+module.exports.updateCover = async (req, res, next) => {
   let {
     projectId,
     // name, 
@@ -115,6 +123,39 @@ module.exports.updateProject = async (req, res, next) => {
     // areas, 
     cover, 
     // link
+  }
+
+  try {
+    const projectUpdated = await Project.findByIdAndUpdate(
+      projectId, projectObj, {new:true, useFindAndModify: false}
+    ).populate('cover')
+    if (projectUpdated === null) {
+      throw Error("Couldn't find and update project");
+    }
+    res.status(200).json({
+      success: true,
+      projectUpdated: projectUpdated
+    })
+  } catch(err){
+    const error = handleErrors(err)
+    res.status(401).json(error)
+  }
+}
+
+module.exports.updateProject = async (req, res, next) => {
+  let {
+    projectId,
+    name, 
+    type, 
+    areas,  
+    link,
+  } = req.body
+
+  let projectObj = {
+    name,
+    type, 
+    areas, 
+    link
   }
 
   try {
@@ -167,6 +208,28 @@ module.exports.updateFullImage = async (req, res, next) => {
     //   moduleId, {$push: {modules: module._id}}, {new: true}
     // )
     res.status(201).json({ success: true, data: fullImageModule})
+  } catch(error) {
+    console.log(error)
+  }
+}
+
+module.exports.deleteFullImage = async (req, res, next) => {
+  const {fullImageModuleId, modulesId} = req.body;
+  console.log("______________________________________")
+  console.log("fullImageModuleId", fullImageModuleId)
+  console.log("______________________________________")
+  try{
+    const fullImageModule = await FullImageModule.findByIdAndRemove(fullImageModuleId, {useFindAndModify: false, new: true})
+    console.log("CARALHOOOOOO", fullImageModule)
+    const module = await Module.findByIdAndRemove(modulesId, {useFindAndModify: false, new: true})
+    console.log("CARALHOOOOOO2", module)
+    // const fullImageModule = await FullImageModule.findByIdAndUpdate(
+    //   fullImageModuleId, {images: images }, {useFindAndModify: false, new: true}
+    // )
+    // const moduleCol = await ModulesCollection.findByIdAndUpdate(
+    //   moduleId, {$push: {modules: module._id}}, {new: true}
+    // )
+    res.status(201).json({ success: true, data: {fullImageModule, module}})
   } catch(error) {
     console.log(error)
   }

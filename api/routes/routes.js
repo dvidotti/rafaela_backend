@@ -17,6 +17,7 @@ router.put('/media', isLoggedIn, mediaControler.updateMedia)
 
 // PROJECT ROUTES
 router.post('/project', isLoggedIn,  projectControler.createProject)
+router.put('/project-cover/', isLoggedIn, projectControler.updateCover)
 router.put('/project/', isLoggedIn, projectControler.updateProject)
 router.delete('/project/:projectId', isLoggedIn, projectControler.deleteProject)
 router.get('/project/:projectId', projectControler.getProject)
@@ -33,6 +34,7 @@ router.delete('/project-header/', isLoggedIn, projHeaderControler.deleteProjectH
 // MODULE FULL IMAGE ROUTES
 router.post('/full-image/', isLoggedIn, projectControler.createFullImage)
 router.put('/full-image/', isLoggedIn, projectControler.updateFullImage)
+router.delete('/full-image/', isLoggedIn, projectControler.deleteFullImage)
 
 // MODULES COLLECTIONS ROUTES
 router.get('/modules/:id', isLoggedIn, projectControler.getModulesCollection)
