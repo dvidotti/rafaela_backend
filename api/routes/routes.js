@@ -23,7 +23,7 @@ router.delete('/project/:projectId', isLoggedIn, projectControler.deleteProject)
 router.get('/project/:projectId', projectControler.getProject)
 
 // PORTFOLIO ROUTES
-router.get('/portfolio', isLoggedIn,  portfolioControler.getPortfolio)
+router.get('/portfolio',  portfolioControler.getPortfolio)
 router.put('/portfolio', isLoggedIn,  portfolioControler.updatePortfolio)
 
 // MODULE PROJECT HEADER ROUTES
@@ -37,6 +37,6 @@ router.put('/full-image/', isLoggedIn, projectControler.updateFullImage)
 router.delete('/full-image/', isLoggedIn, projectControler.deleteFullImage)
 
 // MODULES COLLECTIONS ROUTES
-router.get('/modules/:id', isLoggedIn, projectControler.getModulesCollection)
+router.get('/modules/:id', projectControler.getModulesCollection)
 
 module.exports = router
