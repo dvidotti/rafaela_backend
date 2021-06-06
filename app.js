@@ -28,7 +28,6 @@ const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.
 const app = express();
 
 app.use(cors({  
-  // origin: 'http://localhost:3000',
   origin: process.env.ORIGIN,
   credentials: true
 }))
