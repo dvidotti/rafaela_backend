@@ -43,7 +43,8 @@ module.exports.createUser =  async (req, res, next) => {
   try {
     let user = await User.create({email, password});
     const token = createJWT(user._id)
-    res.cookie('jwt', token, {httpOnly: true, secure: true, maxAge: maxAge * 1000}) //insert httpOnly and secure for https in production
+    res.cookie('jwt', token, {maxAge: maxAge * 1000}) //insert httpOnly and secure for https in production
+    // res.cookie('jwt', token, {httpOnly: true, secure: true, maxAge: maxAge * 1000}) //insert httpOnly and secure for https in production
     
     res.status(201).json({success: true, user: user._id})
   }
