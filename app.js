@@ -39,7 +39,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// add text to force heroku push
 // default value for title local
 app.locals.title = 'Rafa Site Backend';
 
