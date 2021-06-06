@@ -11,8 +11,10 @@ const cookieParser = require('cookie-parser')
 const errorHandler = require('./api/middleware/errorHandler')
 const cors = require('cors')
 
+
+// .connect('mongodb://localhost/rafasite-backend', {useNewUrlParser: true, useUnifiedTopology: true})
 mongoose
-  .connect('mongodb://localhost/rafasite-backend', {useNewUrlParser: true})
+  .connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
   })
