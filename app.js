@@ -27,10 +27,11 @@ const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.
 
 const app = express();
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.ORIGIN,
+  credentials: true
+}))
 
-// origin: process.env.ORIGIN,
-// credentials: true
 
 // Middleware Setup
 app.use(logger('dev'));
