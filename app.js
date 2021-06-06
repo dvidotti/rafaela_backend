@@ -12,7 +12,6 @@ const errorHandler = require('./api/middleware/errorHandler')
 const cors = require('cors')
 
 
-// .connect('mongodb://localhost/rafasite-backend', {useNewUrlParser: true, useUnifiedTopology: true})
 mongoose
   .connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
   .then(x => {
