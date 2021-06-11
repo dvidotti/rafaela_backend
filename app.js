@@ -13,7 +13,7 @@ const cors = require('cors')
 
 
 mongoose
-  .connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
+  .connect(`${process.env.MONGODB_URI}`, {useNewUrlParser: true, useUnifiedTopology: true})
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
   })
@@ -33,7 +33,7 @@ app.use(function(req, res, next) {
 });
 
 app.use(cors({
-  origin: 'https://suspicious-pare-3d027e.netlify.app',
+  origin: process.env.ORIGIN,
   credentials: true
 }))
 
