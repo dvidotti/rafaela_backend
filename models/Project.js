@@ -15,6 +15,7 @@ const Project = mongoose.model("Project", new Schema({
       type: Schema.Types.ObjectId,
       ref: 'ModulesCollection'
     },
+    published:{type: Boolean}
   },
   {
     timestamp: true

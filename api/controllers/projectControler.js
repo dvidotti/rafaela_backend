@@ -27,6 +27,7 @@ module.exports.createProject = async (req, res, next) => {
     areas,
     cover,
     link,
+    published
   } = req.body
 
   let projectObj = {
@@ -35,6 +36,7 @@ module.exports.createProject = async (req, res, next) => {
     areas,
     cover,
     link,
+    published
   }
   try {
     const module = await ModulesCollection.create({})
@@ -149,13 +151,15 @@ module.exports.updateProject = async (req, res, next) => {
     type, 
     areas,  
     link,
+    published
   } = req.body
 
   let projectObj = {
     name,
     type, 
     areas, 
-    link
+    link,
+    published
   }
 
   try {
