@@ -6,7 +6,7 @@ const Module = mongoose.model("Module", new Schema({
     onModel: {
       type: String,
       // required: true,
-      enum: ['ProjectHeader', 'FullImageModule']
+      enum: ['ProjectHeader', 'FullImageModule', 'DoublePicture']
     }
   },
   {

@@ -36,6 +36,12 @@ router.post('/full-image/', isLoggedIn, projectControler.createFullImage)
 router.put('/full-image/', isLoggedIn, projectControler.updateFullImage)
 router.delete('/full-image/', isLoggedIn, projectControler.deleteFullImage)
 
+
+// MODULE FULL IMAGE ROUTES
+router.post('/double-picture/',isLoggedIn, projectControler.createDoublePicture)
+router.delete('/double-picture/', isLoggedIn, projectControler.deleteDoublePicture)
+router.put('/double-picture/', isLoggedIn, projectControler.updateDoublePicture)
+
 // MODULES COLLECTIONS ROUTES
 router.get('/modules/:id', projectControler.getModulesCollection)
 

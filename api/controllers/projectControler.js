@@ -2,6 +2,7 @@ const Project = require('../../models/Project')
 const Portfolio = require('../../models/Portfolio')
 const ModulesCollection = require('../../models/ModulesCollection')
 const FullImageModule = require('../../models/FullImageModule')
+const DoublePicture = require('../../models/DoublePicture')
 const Module = require('../../models/Module')
 const dotenv = require('dotenv');
 dotenv.config();
@@ -180,7 +181,7 @@ module.exports.updateProject = async (req, res, next) => {
 }
 
 
-
+// FullImageModule controles
 module.exports.createFullImage = async (req, res, next) => {
   const {images, moduleId} = req.body;
 
@@ -196,15 +197,9 @@ module.exports.createFullImage = async (req, res, next) => {
   }
 }
 
+// It's not working, need to be fixed TODO
 module.exports.updateFullImage = async (req, res, next) => {
-  const {images, moduleId, fullImageModuleId} = req.body;
-  console.log("______________________________________")
-  console.log("IMAGES", images)
-  console.log("fullImageModuleId", fullImageModuleId)
-  console.log("______________________________________")
   try{
-    const caralho = await FullImageModule.findById(fullImageModuleId)
-    console.log("CARALHOOOOOO", caralho)
     const fullImageModule = await FullImageModule.findByIdAndUpdate(
       fullImageModuleId, {images: images }, {useFindAndModify: false, new: true}
     )
@@ -219,14 +214,9 @@ module.exports.updateFullImage = async (req, res, next) => {
 
 module.exports.deleteFullImage = async (req, res, next) => {
   const {fullImageModuleId, modulesId} = req.body;
-  console.log("______________________________________")
-  console.log("fullImageModuleId", fullImageModuleId)
-  console.log("______________________________________")
   try{
     const fullImageModule = await FullImageModule.findByIdAndRemove(fullImageModuleId, {useFindAndModify: false, new: true})
-    console.log("CARALHOOOOOO", fullImageModule)
     const module = await Module.findByIdAndRemove(modulesId, {useFindAndModify: false, new: true})
-    console.log("CARALHOOOOOO2", module)
     // const fullImageModule = await FullImageModule.findByIdAndUpdate(
     //   fullImageModuleId, {images: images }, {useFindAndModify: false, new: true}
     // )
@@ -239,6 +229,51 @@ module.exports.deleteFullImage = async (req, res, next) => {
   }
 }
 
+
+//Double Picture controler
+module.exports.createDoublePicture = async (req, res, next) => {
+  const {imageOne, imageTwo, moduleId} = req.body;
+
+  try{
+    const doubleImage = await DoublePicture.create({imageOne, imageTwo})
+    const module = await Module.create({module: doubleImage._id, onModel: "DoublePicture" })
+    const moduleCol = await ModulesCollection.findByIdAndUpdate(
+      moduleId, {$push: {modules: module._id}}, {new: true}
+    )
+    res.status(201).json({ success: true, data: doubleImage })
+  } catch(error) {
+    console.log(error)
+  }
+}
+
+module.exports.updateDoublePicture = async (req, res, next) => {
+  const {imageOne, imageTwo, moduleId} = req.body;
+  try{
+    const doublePictureModule = await DoublePicture.findByIdAndUpdate(
+      moduleId, {imageOne, imageTwo }, {useFindAndModify: false, new: true}
+    )
+    res.status(201).json({ success: true, data: doublePictureModule})
+  } catch(error) {
+    console.log(error)
+  }
+  
+
+}
+
+
+module.exports.deleteDoublePicture = async (req, res, next) => {
+  const {doublePictureModuleId, modulesId} = req.body;
+  try{
+    const doublePicture = await DoublePicture.findByIdAndRemove(doublePictureModuleId, {useFindAndModify: false, new: true})
+    const module = await Module.findByIdAndRemove(modulesId, {useFindAndModify: false, new: true})
+    res.status(201).json({ success: true, data: {doublePicture, module}})
+  } catch(error) {
+    console.log(error)
+  }
+}
+
+
+// Get and populate all modules
 module.exports.getModulesCollection = async (req, res, next) => {
   const {id} = req.params;
   try {
@@ -248,7 +283,7 @@ module.exports.getModulesCollection = async (req, res, next) => {
       populate: {
         path: "module",
         populate: {
-          path: 'headImg images',
+          path: 'headImg images imageOne imageTwo',
         }
       }
     });
