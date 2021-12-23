@@ -199,6 +199,7 @@ module.exports.createFullImage = async (req, res, next) => {
 
 // It's not working, need to be fixed TODO
 module.exports.updateFullImage = async (req, res, next) => {
+  const {fullImageModuleId, images} = req.body;
   try{
     const fullImageModule = await FullImageModule.findByIdAndUpdate(
       fullImageModuleId, {images: images }, {useFindAndModify: false, new: true}
