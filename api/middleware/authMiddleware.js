@@ -10,7 +10,9 @@ const isLoggedIn = (req, res, next) => {
       if(err) throw Error("Authentication Failed")
       else req.userId = decodedToken.id;
     })
-  } else throw Error("No token detected")
+  } else {
+    res.status(401).json({success: false, message: "User not authenticated"})
+  }
   next()
 }
 
