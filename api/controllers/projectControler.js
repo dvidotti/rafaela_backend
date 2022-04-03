@@ -228,20 +228,18 @@ module.exports.createFullImage = async (req, res, next) => {
             component: fullImageModule._id,
             onComponent: 'FullImageModule',
         })
-        console.log('MOD--->', module)
-        const moduleCol = await ModulesCollection.findByIdAndUpdate(
+        await ModulesCollection.findByIdAndUpdate(
             moduleCollId,
             { $push: { modules: module._id } },
             { new: true }
         )
-        console.log('fullImageModulePopulated', fullImageModulePopulated)
         res.status(201).json({
             success: true,
             data: fullImageModulePopulated,
             module: module,
         })
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -249,7 +247,7 @@ module.exports.createFullImage = async (req, res, next) => {
 module.exports.updateFullImage = async (req, res, next) => {
     const { fullImageModuleId, images } = req.body
     try {
-        const fullImageModule = await FullImageModule.findByIdAndUpdate(
+        await FullImageModule.findByIdAndUpdate(
             fullImageModuleId,
             { images: images },
             { useFindAndModify: false, new: true }
@@ -258,15 +256,12 @@ module.exports.updateFullImage = async (req, res, next) => {
             fullImageModuleId
         ).populate('images')
 
-        // const moduleCol = await ModulesCollection.findByIdAndUpdate(
-        //   moduleId, {$push: {modules: module._id}}, {new: true}
-        // )
         res.status(201).json({
             success: true,
             data: fullImageModulePopulated,
         })
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -285,14 +280,11 @@ module.exports.deleteFullImage = async (req, res, next) => {
             modulesCollectionId,
             { $pull: { modules: moduleId } }
         )
-        console.log('fullImageModule', fullImageModule)
-        console.log('module', module)
-        console.log('moduleCol', moduleCol)
         res
             .status(201)
             .json({ success: true, data: { fullImageModule, module } })
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -313,7 +305,7 @@ module.exports.createDoublePicture = async (req, res, next) => {
         )
         res.status(201).json({ success: true, data: doubleImage })
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -327,7 +319,7 @@ module.exports.updateDoublePicture = async (req, res, next) => {
         )
         res.status(201).json({ success: true, data: doublePictureModule })
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -344,7 +336,7 @@ module.exports.deleteDoublePicture = async (req, res, next) => {
         })
         res.status(201).json({ success: true, data: { doublePicture, module } })
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -366,6 +358,6 @@ module.exports.getModulesCollection = async (req, res, next) => {
             data: mCol,
         })
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }

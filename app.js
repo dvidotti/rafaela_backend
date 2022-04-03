@@ -10,6 +10,7 @@ const routes = require('./api/routes/routes')
 const cookieParser = require('cookie-parser')
 const errorHandler = require('./api/middleware/errorHandler')
 const cors = require('cors')
+mongoose.set('useCreateIndex', true)
 
 mongoose
     .connect(`${process.env.MONGODB_URI}`, {
@@ -60,7 +61,7 @@ app.locals.title = 'Rafa Site Backend'
 app.use('/', routes)
 app.use('/auth', auth)
 
-//error handl{er
+// Error handler
 app.use((err, req, res, next) => {
     let errors = errorHandler(err)
     res.send(errors)

@@ -6,12 +6,6 @@ const ModulesCollection = mongoose.model(
     new Schema(
         {
             modules: [{ type: Schema.Types.ObjectId, ref: 'Module' }],
-            // modules: [{type: Schema.Types.ObjectId, refPath: 'onModel'}],
-            // onModel: {
-            //   type: String,
-            //   // required: true,
-            //   enum: ['ProjectHeader', 'FullImageModule']
-            // }
         },
         {
             timestamp: true,

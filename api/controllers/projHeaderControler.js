@@ -36,18 +36,15 @@ module.exports.createProjectHeader = async (req, res, next) => {
         date,
         partnership,
     }
-    console.log('OBJCPOST', obj)
     try {
         const projectHeader = await ProjectHeader.create(obj)
         let updatedProjectHeader = await ProjectHeader.findById(
             projectHeader._id
         ).populate('headImg')
-        console.log('PROJECTHEADER', projectHeader)
         const module = await Module.create({
             component: projectHeader._id,
             onComponent: 'ProjectHeader',
         })
-        console.log('MODULE', module)
         const moduleCol = await ModulesCollection.findByIdAndUpdate(
             moduleColId,
             { $push: { modules: module._id } },
@@ -59,7 +56,7 @@ module.exports.createProjectHeader = async (req, res, next) => {
             module: module,
         })
     } catch (error) {
-        console.log('ERROR', error)
+        console.error(error)
         handleErrors(error)
     }
 }
@@ -106,7 +103,7 @@ module.exports.updateProjectHeader = async (req, res, next) => {
             module,
         })
     } catch (errors) {
-        console.log(errors)
+        console.error(errors)
         handleErrors(errors)
     }
 }
@@ -130,7 +127,7 @@ module.exports.deleteProjectHeader = async (req, res, next) => {
             data: projectHeader,
         })
     } catch (errors) {
-        console.log(errors)
+        console.error(errors)
         handleErrors(errors)
     }
 }
