@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const Module = mongoose.model("Module", new Schema({
-    module: {type: Schema.Types.ObjectId, refPath: 'onModel'},
-    onModel: {
+    component: {type: Schema.Types.ObjectId, refPath: 'onComponent'},
+    onComponent: {
       type: String,
       // required: true,
       enum: ['ProjectHeader', 'FullImageModule', 'DoublePicture']

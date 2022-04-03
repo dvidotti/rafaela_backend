@@ -2,10 +2,28 @@ const Project = require('../../models/Project')
 const Portfolio = require('../../models/Portfolio')
 const ModulesCollection = require('../../models/ModulesCollection')
 const FullImageModule = require('../../models/FullImageModule')
+const ProjectHeader = require('../../models/ProjectHeader')
 const DoublePicture = require('../../models/DoublePicture')
 const Module = require('../../models/Module')
 const dotenv = require('dotenv');
 dotenv.config();
+
+// TODO MOVE BELLOW TO UTILS (NEW) FOLDER WITH CONTROLERS // 
+
+async function removeComponentFromModule(module) {
+  switch(module.onComponent) {
+    case "ProjectHeader":
+      await ProjectHeader.findByIdAndRemove(module.component, {useFindAndModify: false, new: true})
+      break;
+    case "FullImageModule":
+      await FullImageModule.findByIdAndRemove(module.component, {useFindAndModify: false, new: true})
+      break;
+    case "DoublePicture":
+      await DoublePicture.findByIdAndRemove(module.component, {useFindAndModify: false, new: true})
+      break;
+  }
+  let second = await Module.findByIdAndDelete(module._id)
+}
 
 // ERRORS HANDLER //
 const handleErrors = (err) => {
@@ -45,16 +63,13 @@ module.exports.createProject = async (req, res, next) => {
     const project = await Project.create(projectObj)
     const portfolio = await Portfolio.find()
       if(portfolio.length === 0) {
-        console.log("PROJECT", project)
         portfolio = await Portfolio.create({portfolio: [project._id]})
-        console.log("PORTFOLIO CREATED", portfolio)
       } else {
           let portFolioId = portfolio[0]._id
           let portFolioUpadted = await Portfolio.findByIdAndUpdate(
             portFolioId, {$push : {"portfolio": project._id}},
             {new: true}
           )
-          console.log(portFolioUpadted)
       }
     res.status(201).json(project)
   } 
@@ -66,7 +81,6 @@ module.exports.createProject = async (req, res, next) => {
 
 module.exports.getProject = async (req, res, next) => {
   let { projectId } = req.params;
-  console.log("PROJECTID", projectId)
   try {
     const project = await Project.findById(projectId).populate('images cover headImg')
     if(project === null) {
@@ -85,16 +99,27 @@ module.exports.deleteProject = async (req, res, next) => {
   try {
     let { projectId } = req.params;
     let projectDeleted = await Project.findByIdAndDelete(projectId)
-    if(projectDeleted === null) {
+    if( projectDeleted === null ) {
       throw Error("Couldn't find and delete project")
     }
+    let modColl = await ModulesCollection.findById(modCollId).populate("modules")
+    
+    // Delete modules/components within the project from DB
+    if(!!modColl.modules) {
+      modColl.modules.forEach(module => {
+      removeComponentFromModule(module)
+      })
+    }
+    
+    // Delete ModulesCollection related to the project
     let moduleCollection = await ModulesCollection.findByIdAndDelete(modCollId)
+
+    // Update portfolio
     let portfolio = await Portfolio.find();
     let portFolioId = portfolio[0]._id
     let portUpdated = await Portfolio.findByIdAndUpdate(
       portFolioId, {$pull: {portfolio: projectId}}, {new: true}
     )
-    console.log("PORT UPDATED", portUpdated)
     res.status(201).json({
       success: true,
       message: `The project ${projectDeleted.name}  was succesfully deleted`,
@@ -183,15 +208,22 @@ module.exports.updateProject = async (req, res, next) => {
 
 // FullImageModule controles
 module.exports.createFullImage = async (req, res, next) => {
-  const {images, moduleId} = req.body;
+  const {images, moduleCollId} = req.body;
 
   try{
     const fullImageModule = await FullImageModule.create({images})
-    const module = await Module.create({module: fullImageModule._id, onModel: "FullImageModule" })
+    const fullImageModulePopulated = await FullImageModule.findById(fullImageModule._id).populate("images")
+    const module = await Module.create({component: fullImageModule._id, onComponent: "FullImageModule" })
+    console.log("MOD--->", module)
     const moduleCol = await ModulesCollection.findByIdAndUpdate(
-      moduleId, {$push: {modules: module._id}}, {new: true}
+      moduleCollId, {$push: {modules: module._id}}, {new: true}
     )
-    res.status(201).json({ success: true, data: fullImageModule })
+    console.log('fullImageModulePopulated', fullImageModulePopulated)
+    res.status(201).json({ 
+      success: true,
+       data: fullImageModulePopulated,
+       module: module
+     })
   } catch(error) {
     console.log(error)
   }
@@ -204,26 +236,31 @@ module.exports.updateFullImage = async (req, res, next) => {
     const fullImageModule = await FullImageModule.findByIdAndUpdate(
       fullImageModuleId, {images: images }, {useFindAndModify: false, new: true}
     )
+    const fullImageModulePopulated = await FullImageModule.findById(fullImageModuleId).populate("images")
+
     // const moduleCol = await ModulesCollection.findByIdAndUpdate(
     //   moduleId, {$push: {modules: module._id}}, {new: true}
     // )
-    res.status(201).json({ success: true, data: fullImageModule})
+    res.status(201).json({
+      success: true, 
+      data: fullImageModulePopulated
+    })
   } catch(error) {
     console.log(error)
   }
 }
 
 module.exports.deleteFullImage = async (req, res, next) => {
-  const {fullImageModuleId, modulesId} = req.body;
+  const {fullImageModuleId, moduleId, modulesCollectionId} = req.body;
   try{
     const fullImageModule = await FullImageModule.findByIdAndRemove(fullImageModuleId, {useFindAndModify: false, new: true})
-    const module = await Module.findByIdAndRemove(modulesId, {useFindAndModify: false, new: true})
-    // const fullImageModule = await FullImageModule.findByIdAndUpdate(
-    //   fullImageModuleId, {images: images }, {useFindAndModify: false, new: true}
-    // )
-    // const moduleCol = await ModulesCollection.findByIdAndUpdate(
-    //   moduleId, {$push: {modules: module._id}}, {new: true}
-    // )
+    const module = await Module.findByIdAndRemove(moduleId, {useFindAndModify: false, new: true})
+    const moduleCol = await ModulesCollection.findByIdAndUpdate(
+      modulesCollectionId, {$pull: {modules: moduleId}}
+    )
+    console.log("fullImageModule",fullImageModule)
+    console.log("module",module)
+    console.log("moduleCol",moduleCol)
     res.status(201).json({ success: true, data: {fullImageModule, module}})
   } catch(error) {
     console.log(error)
@@ -237,7 +274,7 @@ module.exports.createDoublePicture = async (req, res, next) => {
 
   try{
     const doubleImage = await DoublePicture.create({imageOne, imageTwo})
-    const module = await Module.create({module: doubleImage._id, onModel: "DoublePicture" })
+    const module = await Module.create({component: doubleImage._id, onComponent: "DoublePicture" })
     const moduleCol = await ModulesCollection.findByIdAndUpdate(
       moduleId, {$push: {modules: module._id}}, {new: true}
     )
@@ -282,7 +319,7 @@ module.exports.getModulesCollection = async (req, res, next) => {
     .populate({
       path:'modules',
       populate: {
-        path: "module",
+        path: "component",
         populate: {
           path: 'headImg images imageOne imageTwo',
         }
